@@ -10,4 +10,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: swapdeps
-        uses: niktek/swapdeps-action
+        uses: niktek/swapdeps-action@v1
