@@ -1,0 +1,36 @@
+{
+  "name": "swapdeps",
+  "version": "0.0.1",
+  "description": "",
+  "main": "bin.mjs",
+  "keywords": [],
+  "author": "nik <nik@niktek.io>",
+  "license": "MIT",
+  "scripts": {
+    "test": "node bin.mjs"
+  },
+  "bin": {
+    "swapdeps": "./bin.mjs"
+  },
+  "dependencies": {
+    "@pnpm/find-workspace-dir": "^6.0.2",
+    "foo": "1.0.0"
+  },
+  "devDependencies": {
+    "foo": "1.0.0"
+  },
+  "peerDependencies": {
+    "foo": "1.0.0"
+  },
+  "deployConfig": {
+    "dependencies": {
+      "foo": "1.0.0"
+    },
+    "devDependencies": {
+      "foo": "1.0.0"
+    },
+    "peerDependencies": {
+      "foo": "1.0.0"
+    }
+  }
+}
