@@ -27,10 +27,10 @@
       "foo": "1.0.0"
     },
     "devDependencies": {
-      "foo": "1.0.0"
+      "foo": "1.1.0"
     },
     "peerDependencies": {
-      "foo": "1.0.0"
+      "foo": "1.2.0"
     }
   }
 }
