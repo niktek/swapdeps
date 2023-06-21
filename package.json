@@ -14,13 +14,13 @@
   },
   "dependencies": {
     "@pnpm/find-workspace-dir": "^6.0.2",
-    "foo": "1.0.0"
+    "foo": "workspace:*"
   },
   "devDependencies": {
-    "foo": "1.0.0"
+    "foo": "workspace:*"
   },
   "peerDependencies": {
-    "foo": "1.0.0"
+    "foo": "workspace:*"
   },
   "deployConfig": {
     "dependencies": {
