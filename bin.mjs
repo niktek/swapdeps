@@ -3,6 +3,7 @@ import { findWorkspaceDir } from '@pnpm/find-workspace-dir';
 import { readFileSync, writeFileSync } from 'fs';
 import mri from 'mri';
 
+
 export function makeWorkspacePackageLinks(pkg, copyPackagesToDeployConfig = false) {
 	console.log('Setting dependencies to workspace:*');
 	let clean = true;
@@ -10,7 +11,11 @@ export function makeWorkspacePackageLinks(pkg, copyPackagesToDeployConfig = fals
 		if (pkg?.deployConfig[depType] != undefined) {
 			for (const [dep, version] of Object.entries(pkg?.deployConfig[depType])) {
 				if (copyPackagesToDeployConfig) {
-					pkg.deployConfig[depType][dep] = pkg[depType][dep];
+					const semver = pkg[depType][dep]
+					// We never write workspace scoped references to deployConfig
+					if (!semver.startsWith('workspace:')) {
+						pkg.deployConfig[depType][dep] = pkg[depType][dep];
+					}
 				}
 				pkg[depType][dep] = 'workspace:*';
 				clean = false;
@@ -22,6 +27,7 @@ export function makeWorkspacePackageLinks(pkg, copyPackagesToDeployConfig = fals
 	}
 }
 
+// Bring the semver version from deployConfig into the dependencies and devDependencies
 export function makeVersionedPackageLinks(pkg) {
 	console.log('Setting dependencies to versioned');
 	let clean = true;

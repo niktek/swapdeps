@@ -1,6 +1,6 @@
 {
   "name": "swapdeps",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.1",
   "description": "Quick tool for swapping dependencies and devDependencies in package.json from values in deployConfig",
   "main": "bin.mjs",
   "keywords": ["package management", "pnpm", "package.json", "dependencies", "devDependencies", "deployConfig", "ci", "cd"],
