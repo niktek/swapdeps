@@ -1,7 +1,7 @@
 {
   "name": "swapdeps",
   "version": "0.0.1",
-  "description": "",
+  "description": "Quick tool for swapping dependencies and devDependencies in package.json from values in deployConfig",
   "main": "bin.mjs",
   "keywords": [],
   "author": "nik <nik@niktek.io>",
@@ -14,23 +14,6 @@
   },
   "dependencies": {
     "@pnpm/find-workspace-dir": "^6.0.2",
-    "foo": "workspace:*"
-  },
-  "devDependencies": {
-    "foo": "workspace:*"
-  },
-  "peerDependencies": {
-    "foo": "workspace:*"
-  },
-  "deployConfig": {
-    "dependencies": {
-      "foo": "1.0.0"
-    },
-    "devDependencies": {
-      "foo": "1.1.0"
-    },
-    "peerDependencies": {
-      "foo": "1.2.0"
-    }
+    "mri": "^1.2.0"
   }
 }
