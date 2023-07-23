@@ -17,7 +17,11 @@
     "swapdeps": "./bin.mjs"
   },
   "dependencies": {
-    "@pnpm/find-workspace-dir": "^6.0.2",
-    "mri": "^1.2.0"
-  }
+    "@skeletonlabs/skeleton":"workspace:*"
+  },
+  "deployConfig": {
+    "dependencies": {
+        "@skeletonlabs/skeleton": "1.1.0"
+    }
+}
 }

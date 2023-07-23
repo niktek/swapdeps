@@ -1,29 +1,42 @@
 #!/usr/bin/env node
-import { findWorkspaceDir } from '@pnpm/find-workspace-dir';
-import { readFileSync, writeFileSync } from 'fs';
-import mri from 'mri';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { resolve, join, dirname } from 'path';
 
+function findPnpmWorkspaceSync(directory) {
+	const absolutePath = resolve(directory);
 
-export function makeWorkspacePackageLinks(pkg, copyPackagesToDeployConfig = false) {
+	const pnpmWorkspacePath = join(absolutePath, 'pnpm-workspace.yaml');
+	if (existsSync(pnpmWorkspacePath)) {
+		return absolutePath;
+	}
+
+	const parentDir = dirname(absolutePath);
+	if (parentDir === absolutePath) {
+		return false;
+	}
+
+	return findPnpmWorkspaceSync(parentDir);
+}
+
+export function makeWorkspacePackageLinks(pkg) {
 	console.log('Setting dependencies to workspace:*');
 	let clean = true;
 	['dependencies', 'devDependencies'].forEach((depType) => {
 		if (pkg?.deployConfig[depType] != undefined) {
 			for (const [dep, version] of Object.entries(pkg?.deployConfig[depType])) {
-				if (copyPackagesToDeployConfig) {
-					const semver = pkg[depType][dep]
-					// We never write workspace scoped references to deployConfig
-					if (!semver.startsWith('workspace:')) {
-						pkg.deployConfig[depType][dep] = pkg[depType][dep];
-					}
+				const semver = pkg[depType][dep]
+				// We never write workspace scoped references to deployConfig
+				if (!semver.startsWith('workspace:')) {
+					pkg.deployConfig[depType][dep] = pkg[depType][dep];
 				}
 				pkg[depType][dep] = 'workspace:*';
 				clean = false;
 			}
 		}
 	});
+
 	if (clean === false) {
-		writeFileSync('./package.json', JSON.stringify(pkg, null, 2), 'utf8');
+		writeFileSync('./package.json', JSON.stringify(pkg, null, 4), 'utf8');
 	}
 }
 
@@ -40,48 +53,36 @@ export function makeVersionedPackageLinks(pkg) {
 		}
 	});
 	if (clean === false) {
-		writeFileSync('./package.json', JSON.stringify(pkg, null, 2), 'utf8');
+		writeFileSync('./package.json', JSON.stringify(pkg, null, 4), 'utf8');
 	}
 }
 
 export async function swapdeps() {
 	let pkg = JSON.parse(readFileSync('./package.json', 'utf8'));
 	let clean = true;
-	const opts = {
-		boolean: ['workspace', 'versioned', 'copy', 'help'],
-		alias: { workspace: 'w', versioned: 'v', copy: 'c', help: 'h' }
-	}
 	const argv = process.argv.slice(2);
-	const args = mri(argv, opts);
-	if (args.help) {
-		const help = `
-swapdeps workspace 		# sets dependencies to workspace:*
-swapdeps workspace copy # sets dependencies to workspace and copies current values to deployConfig
-swapdeps versioned 		# sets dependencies to versioned
-swapdeps -wc 			# short for workspace copy
-swapdeps -v 			# short for versioned
-`;
-		console.log(help);
-		return;
-	}
-	if (args.workspace && args.versioned) {
-		console.error('Cannot set both workspace and versioned');
-		return;
-	}
-	if (args.workspace) {
-		makeWorkspacePackageLinks(pkg, args.copy);
-		return;
-	}
-	if (args.versioned) {
-		makeVersionedPackageLinks(pkg);
-		return;
-	}
 
-	const workspaceDir = await findWorkspaceDir(process.cwd());
-	if (workspaceDir === undefined) {
-		makeVersionedPackageLinks(pkg);
-	} else {
-		makeWorkspacePackageLinks(pkg);
+	switch (argv) {
+		case 'versioned':
+			makeVersionedPackageLinks(pkg);
+			break;
+		case 'workspace':
+			makeWorkspacePackageLinks(pkg);
+			break;
+		case 'help':
+			const help = `
+swapdeps workspace 		# sets dependencies to workspace:*
+swapdeps versioned 		# sets dependencies to versioned
+`;
+			console.log(help);
+			break;
+		default:
+			const workspaceDir = findPnpmWorkspaceSync(process.cwd());
+			if (workspaceDir === false) {
+				makeVersionedPackageLinks(pkg);
+			} else {
+				makeWorkspacePackageLinks(pkg);
+			}
 	}
 }
 
